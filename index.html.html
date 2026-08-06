@@ -3,13 +3,12 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
-<title>رحلة المعرفة | لعبة تعليمية</title>
+<title>مدار | نافس رياضيات الصف الثالث</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;600;700;800&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  /* ============ Design tokens ============ */
   :root{
     --night:#181129;
     --night-deep:#100b1e;
@@ -29,7 +28,6 @@
     --font-display: 'Baloo Bhaijaan 2', 'Tajawal', sans-serif;
     --font-body: 'Tajawal', sans-serif;
   }
-
   *{box-sizing:border-box; margin:0; padding:0;}
   html,body{height:100%;}
   body{
@@ -46,28 +44,18 @@
     padding: 20px;
     overflow-x:hidden;
   }
-
-  /* subtle floating stars in background */
-  .stars{
-    position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden;
-  }
+  .stars{ position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
   .stars span{
     position:absolute; width:3px; height:3px; border-radius:50%;
     background: var(--gold); opacity:.35;
     animation: twinkle 4s ease-in-out infinite;
   }
   @keyframes twinkle{ 0%,100%{opacity:.15; transform:scale(1);} 50%{opacity:.7; transform:scale(1.6);} }
-
-  .app{
-    position:relative; z-index:1;
-    width:100%; max-width: 560px;
-  }
-
+  .app{ position:relative; z-index:1; width:100%; max-width: 560px; }
   .screen{ display:none; animation: rise .5s cubic-bezier(.2,.8,.2,1); }
   .screen.active{ display:block; }
   @keyframes rise{ from{opacity:0; transform:translateY(18px);} to{opacity:1; transform:translateY(0);} }
 
-  /* ============ Home screen ============ */
   .home-card{
     background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
     border: 1px solid var(--line);
@@ -106,9 +94,20 @@
     -webkit-background-clip:text; background-clip:text; color:transparent;
     margin-bottom:12px;
   }
+  .test-chip{
+    display:inline-block;
+    background: rgba(246,185,59,0.14);
+    border: 1px solid rgba(246,185,59,0.35);
+    color: var(--gold);
+    font-weight:700;
+    font-size:14px;
+    padding: 6px 16px;
+    border-radius: 999px;
+    margin-bottom: 18px;
+  }
   .subtitle{
     color: var(--ink-dim); font-size:15.5px; line-height:1.7; margin-bottom:32px;
-    max-width: 380px; margin-left:auto; margin-right:auto;
+    max-width: 400px; margin-left:auto; margin-right:auto;
   }
   .btn{
     font-family: var(--font-display);
@@ -127,41 +126,31 @@
   }
   .btn-primary:hover{ box-shadow: 0 18px 34px -10px rgba(246,185,59,0.85); }
   .btn-primary:disabled{ opacity:.55; cursor:progress; }
-  .btn-ghost{
-    background: transparent; color: var(--ink);
-    border: 1px solid var(--line);
-  }
-  .btn-ghost:hover{ background: rgba(255,255,255,0.05); }
-
   .home-meta{
     margin-top:28px; display:flex; justify-content:center; gap:22px;
     font-size:12.5px; color: var(--ink-dim);
   }
   .home-meta b{ color:var(--ink); display:block; font-size:17px; font-family:var(--font-display); }
-
   footer.copyright{
     text-align:center; margin-top:22px; font-size:12px; color: var(--ink-dim); opacity:.7;
   }
-
   .status-msg{
     margin-top:18px; font-size:13.5px; color: var(--ink-dim); min-height:18px;
   }
   .status-msg.error{ color: var(--coral); }
 
-  /* ============ Game screen ============ */
   .game-card{
     background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
     border: 1px solid var(--line);
     border-radius: var(--radius-lg);
-    padding: 26px 24px 28px;
+    padding: 22px 20px 24px;
     box-shadow: var(--shadow-deep);
   }
   .game-top{
-    display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;
+    display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;
   }
   .q-counter{ font-size:13px; color: var(--ink-dim); font-weight:700; letter-spacing:.03em; }
   .q-counter b{ color: var(--gold); font-size:15px; }
-
   .timer-ring{ position:relative; width:52px; height:52px; }
   .timer-ring svg{ transform: rotate(-90deg); width:52px; height:52px; }
   .timer-ring circle{ fill:none; stroke-width:5; }
@@ -171,20 +160,26 @@
     position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
     font-family: var(--font-display); font-weight:700; font-size:16px;
   }
-
-  .dots{ display:flex; gap:6px; margin-bottom:22px; }
-  .dot{ flex:1; height:6px; border-radius:4px; background: rgba(255,255,255,0.08); overflow:hidden; }
+  .dots{ display:flex; gap:6px; margin-bottom:16px; flex-wrap:wrap; }
+  .dot{ flex:1 1 0; min-width:10px; height:6px; border-radius:4px; background: rgba(255,255,255,0.08); overflow:hidden; }
   .dot i{ display:block; height:100%; width:0%; background: var(--gold); transition: width .3s ease; }
   .dot.done i{ width:100%; background: var(--mint); }
   .dot.wrong i{ width:100%; background: var(--coral); }
   .dot.current i{ width:100%; }
-
   .question-text{
     font-family: var(--font-display);
-    font-size: 21px; font-weight:700; line-height:1.55;
-    margin-bottom: 22px; min-height: 90px;
+    font-size: 20px; font-weight:700; line-height:1.55;
+    margin-bottom: 16px;
   }
-
+  .img-card{
+    background: #fbf8ff;
+    border: 1px solid #e8e0f5;
+    border-radius: 16px;
+    padding: 14px 16px;
+    margin-bottom: 18px;
+    direction: ltr;
+  }
+  .img-card.hidden{ display:none; }
   .options{ display:flex; flex-direction:column; gap:12px; }
   .option{
     display:flex; align-items:center; gap:12px;
@@ -212,7 +207,6 @@
   .option.disabled{ pointer-events:none; opacity:.65; }
   .option.disabled.correct, .option.disabled.wrong{ opacity:1; }
 
-  /* ============ Result screen ============ */
   .result-card{
     background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
     border: 1px solid var(--line);
@@ -231,10 +225,8 @@
   }
   .score-num b{ font-family: var(--font-display); font-size:34px; font-weight:800; }
   .score-num span{ font-size:12px; color: var(--ink-dim); }
-
   .result-title{ font-family: var(--font-display); font-size:22px; font-weight:700; margin-bottom:6px; }
   .result-sub{ color: var(--ink-dim); font-size:14px; margin-bottom:26px; }
-
   .review-list{ display:flex; flex-direction:column; gap:12px; text-align:right; margin-bottom:26px; }
   .review-item{
     background: rgba(255,255,255,0.04);
@@ -257,11 +249,10 @@
     background: rgba(255,255,255,0.03); border-radius:10px; padding:10px 12px;
     border-right: 3px solid var(--gold);
   }
-
   @media (max-width:480px){
     .home-card, .game-card, .result-card{ padding-left:18px; padding-right:18px; }
     h1.title{ font-size:28px; }
-    .question-text{ font-size:18.5px; }
+    .question-text{ font-size:18px; }
   }
 </style>
 </head>
@@ -271,29 +262,28 @@
 
 <div class="app">
 
-  <!-- ============ HOME SCREEN ============ -->
   <section id="screen-home" class="screen active">
     <div class="home-card">
       <div class="logo-badge">🧠</div>
-      <div class="eyebrow">لعبة تعليمية تفاعلية</div>
-      <h1 class="title">رحلة المعرفة</h1>
-      <p class="subtitle">اختبر معلوماتك عبر 10 أسئلة عشوائية، وسابق الوقت، واجمع أعلى نتيجة ممكنة!</p>
+      <div class="eyebrow">منصة مدار التعليمية</div>
+      <h1 class="title">مدار</h1>
+      <div class="test-chip">نافس رياضيات — الصف الثالث الابتدائي</div>
+      <p class="subtitle">اختبر نفسك في 25 سؤالاً عشوائياً من بنك أسئلة نافس، وسابق الوقت، واجمع أعلى نتيجة!</p>
       <button class="btn btn-primary" id="btn-start">ابدأ الجولة</button>
       <div class="status-msg" id="home-status"></div>
       <div class="home-meta">
-        <div><b>10</b>أسئلة</div>
+        <div><b>25</b>أسئلة</div>
         <div><b>15</b>ثانية لكل سؤال</div>
-        <div><b>∞</b>محاولات</div>
+        <div><b>250</b>سؤالاً في البنك</div>
       </div>
     </div>
-    <footer class="copyright">© 2026 رحلة المعرفة — جميع الحقوق محفوظة</footer>
+    <footer class="copyright">© 2026 مدار — جميع الحقوق محفوظة</footer>
   </section>
 
-  <!-- ============ GAME SCREEN ============ -->
   <section id="screen-game" class="screen">
     <div class="game-card">
       <div class="game-top">
-        <div class="q-counter">السؤال <b id="q-index">1</b> / <span id="q-total">10</span></div>
+        <div class="q-counter">السؤال <b id="q-index">1</b> / <span id="q-total">25</span></div>
         <div class="timer-ring">
           <svg viewBox="0 0 52 52">
             <circle class="timer-track" cx="26" cy="26" r="22"></circle>
@@ -304,11 +294,11 @@
       </div>
       <div class="dots" id="dots"></div>
       <div class="question-text" id="question-text">جارِ التحميل...</div>
+      <div class="img-card hidden" id="question-image" dir="ltr"></div>
       <div class="options" id="options"></div>
     </div>
   </section>
 
-  <!-- ============ RESULT SCREEN ============ -->
   <section id="screen-result" class="screen">
     <div class="result-card">
       <div class="score-ring">
@@ -316,7 +306,7 @@
           <circle class="score-track" cx="75" cy="75" r="65"></circle>
           <circle class="score-bar" id="score-bar" cx="75" cy="75" r="65"></circle>
         </svg>
-        <div class="score-num"><b id="score-value">0/10</b><span>نتيجتك</span></div>
+        <div class="score-num"><b id="score-value">0/25</b><span>نتيجتك</span></div>
       </div>
       <div class="result-title" id="result-title">أحسنت!</div>
       <div class="result-sub" id="result-sub">راجع إجاباتك أدناه</div>
@@ -329,16 +319,16 @@
 
 <script>
   /* ======================================================
-     إعدادات الاتصال بـ Supabase
-     ضع مفتاح anon public key الخاص بك هنا فقط 👇
+     الإعدادات — ضع بيانات مشروع Supabase هنا
   ====================================================== */
   const SUPABASE_URL = "https://umnmlkietrxxmgowlqej.supabase.co";
   const SUPABASE_ANON_KEY = "sb_publishable_LGPzor6AYm9dPF00moLIww_QoQrsDlh";
   const TABLE_NAME = "questions";
-  const QUESTIONS_PER_ROUND = 10;
+  const TEST_NAME = "نافس رياضيات الصف الثالث";
+  const QUESTIONS_PER_ROUND = 25;
   const SECONDS_PER_QUESTION = 15;
 
-  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   /* ======================================================
      عناصر DOM
@@ -351,15 +341,14 @@
   const btnStart = document.getElementById('btn-start');
   const btnAgain = document.getElementById('btn-again');
   const homeStatus = document.getElementById('home-status');
-
   const qIndexEl = document.getElementById('q-index');
   const qTotalEl = document.getElementById('q-total');
   const dotsEl = document.getElementById('dots');
   const questionTextEl = document.getElementById('question-text');
+  const questionImageEl = document.getElementById('question-image');
   const optionsEl = document.getElementById('options');
   const timerBar = document.getElementById('timer-bar');
   const timerNum = document.getElementById('timer-num');
-
   const scoreBar = document.getElementById('score-bar');
   const scoreValueEl = document.getElementById('score-value');
   const resultTitleEl = document.getElementById('result-title');
@@ -375,12 +364,11 @@
   let timerInterval = null;
   let timeLeft = SECONDS_PER_QUESTION;
   let answered = false;
-  let userAnswers = []; // { question, chosen, correct, isRight }
+  let userAnswers = [];
 
   const TIMER_RADIUS = 22;
   const TIMER_CIRC = 2 * Math.PI * TIMER_RADIUS;
   timerBar.style.strokeDasharray = TIMER_CIRC;
-
   const SCORE_RADIUS = 65;
   const SCORE_CIRC = 2 * Math.PI * SCORE_RADIUS;
   scoreBar.style.strokeDasharray = SCORE_CIRC;
@@ -390,7 +378,6 @@
     Object.values(screens).forEach(s => s.classList.remove('active'));
     screens[name].classList.add('active');
   }
-
   function shuffle(arr){
     const a = [...arr];
     for(let i = a.length - 1; i > 0; i--){
@@ -399,20 +386,167 @@
     }
     return a;
   }
+  function escHtml(s){ return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
   /* ======================================================
-     جلب الأسئلة من Supabase (10 أسئلة عشوائية)
+     رسم الصور (SVG) — من بيانات chart_data
+  ====================================================== */
+  function numberLineSVG(d){
+    const W = 420, H = 76, y = 46, x0 = 30, x1 = 390;
+    const seg = (x1 - x0) / d.parts;
+    let out = '<line x1="' + x0 + '" y1="' + y + '" x2="' + x1 + '" y2="' + y + '" stroke="#5b4a7a" stroke-width="3" stroke-linecap="round"/>';
+    for(let i = 0; i <= d.parts; i++){
+      const x = x0 + i * seg;
+      out += '<line x1="' + x + '" y1="' + (y - 9) + '" x2="' + x + '" y2="' + (y + 9) + '" stroke="#7a6ba0" stroke-width="2"/>';
+    }
+    out += '<text x="' + x0 + '" y="' + (y + 24) + '" text-anchor="middle" font-size="16" font-weight="700" fill="#4a3f66">0</text>';
+    out += '<text x="' + x1 + '" y="' + (y + 24) + '" text-anchor="middle" font-size="16" font-weight="700" fill="#4a3f66">1</text>';
+    const px = x0 + (d.position || 0) * seg;
+    out += '<circle cx="' + px + '" cy="' + (y - 22) + '" r="9" fill="#f6b93b" stroke="#e0a020" stroke-width="2"/>';
+    out += '<text x="' + px + '" y="' + (y - 34) + '" text-anchor="middle" font-size="18" font-weight="800" fill="#b07d1a">؟</text>';
+    return '<svg viewBox="0 0 420 76" style="width:100%;height:auto;display:block">' + out + '</svg>';
+  }
+
+  function fractionModelSVG(d){
+    const x0 = 20, y0 = 16, w = 380, h = 58;
+    const seg = w / d.total;
+    let out = '';
+    for(let i = 0; i < d.total; i++){
+      const fill = i < d.shaded ? '#f6b93b' : 'transparent';
+      out += '<rect x="' + (x0 + i * seg) + '" y="' + y0 + '" width="' + seg + '" height="' + h + '" fill="' + fill + '" stroke="#5b4a7a" stroke-width="1.5"/>';
+    }
+    out += '<rect x="' + x0 + '" y="' + y0 + '" width="' + w + '" height="' + h + '" fill="none" stroke="#5b4a7a" stroke-width="3"/>';
+    out += '<text x="210" y="' + (y0 + h + 28) + '" text-anchor="middle" font-size="15" font-weight="700" fill="#4a3f66">مقسّمة إلى ' + d.total + ' أجزاء متساوية</text>';
+    return '<svg viewBox="0 0 420 104" style="width:100%;height:auto;display:block">' + out + '</svg>';
+  }
+
+  function pictographSVG(d){
+    const W = 430;
+    let y = 32;
+    let out = '<text x="215" y="' + y + '" text-anchor="middle" font-size="16" font-weight="800" fill="#b07d1a">كل رمز = ' + d.legend + '</text>';
+    y += 30;
+    const names = Object.keys(d.rows || {});
+    if(names.length === 0){
+      out += '<text x="24" y="' + (y + 18) + '" font-size="26">' + d.symbol + '</text>';
+      y += 34;
+    }
+    names.forEach(function(name){
+      const n = d.rows[name];
+      for(let k = 0; k < n; k++){
+        out += '<text x="' + (24 + k * 34) + '" y="' + (y + 18) + '" font-size="26">' + d.symbol + '</text>';
+      }
+      out += '<text x="' + (W - 14) + '" y="' + (y + 18) + '" text-anchor="end" font-size="15" font-weight="700" fill="#4a3f66">' + escHtml(name) + '</text>';
+      y += 42;
+    });
+    const H = y + 6;
+    return '<svg viewBox="0 0 430 ' + H + '" style="width:100%;height:auto;display:block">' + out + '</svg>';
+  }
+
+  function gridTriangleSVG(d){
+    const maxSide = Math.max(d.base, d.height);
+    const step = Math.max(22, Math.min(30, Math.floor(370 / maxSide)));
+    const W = d.base * step + 70, H = d.height * step + 80;
+    const x0 = 40, y0 = 18;
+    let out = '';
+    if(d.unknown !== 'base'){
+      for(let i = 0; i <= d.base; i++){
+        out += '<line x1="' + (x0 + i * step) + '" y1="' + y0 + '" x2="' + (x0 + i * step) + '" y2="' + (y0 + d.height * step) + '" stroke="#e3dcf0" stroke-width="1"/>';
+      }
+      for(let j = 0; j <= d.height; j++){
+        out += '<line x1="' + x0 + '" y1="' + (y0 + j * step) + '" x2="' + (x0 + d.base * step) + '" y2="' + (y0 + j * step) + '" stroke="#e3dcf0" stroke-width="1"/>';
+      }
+    }
+    const baseY = y0 + d.height * step;
+    out += '<polygon points="' + x0 + ',' + baseY + ' ' + (x0 + d.base * step) + ',' + baseY + ' ' + x0 + ',' + y0 + '" fill="rgba(246,185,59,0.32)" stroke="#f6b93b" stroke-width="3" stroke-linejoin="round"/>';
+    if(d.unknown === 'base'){
+      out += '<line x1="' + x0 + '" y1="' + baseY + '" x2="' + (x0 + d.base * step) + '" y2="' + baseY + '" stroke="#f6b93b" stroke-width="3" stroke-dasharray="8 6"/>';
+      out += '<text x="' + (x0 + (d.base * step) / 2) + '" y="' + (baseY - 10) + '" text-anchor="middle" font-size="18" font-weight="800" fill="#b07d1a">؟</text>';
+    }else{
+      out += '<text x="' + (x0 + (d.base * step) / 2) + '" y="' + (baseY + 22) + '" text-anchor="middle" font-size="14" font-weight="700" fill="#4a3f66">القاعدة = ' + d.base + '</text>';
+    }
+    out += '<text x="' + (x0 + (d.base * step) / 2) + '" y="' + (baseY + 42) + '" text-anchor="middle" font-size="14" font-weight="700" fill="#4a3f66">الارتفاع = ' + d.height + '</text>';
+    return '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:auto;display:block">' + out + '</svg>';
+  }
+
+  function barChartSVG(d){
+    const W = 430, H = 236;
+    const names = Object.keys(d.bars || {});
+    const vals = Object.values(d.bars || {});
+    const max = Math.max.apply(null, vals.concat([1]));
+    const chartL = 36, chartR = W - 14, chartTop = 28, chartBottom = 180;
+    const slots = names.length * 2 - 1;
+    const bw = (chartR - chartL) / Math.max(slots, 1);
+    let out = '<line x1="' + chartL + '" y1="' + chartBottom + '" x2="' + chartR + '" y2="' + chartBottom + '" stroke="#5b4a7a" stroke-width="3"/>';
+    names.forEach(function(name, i){
+      const v = d.bars[name];
+      const h = (v / max) * (chartBottom - chartTop);
+      const x = chartL + i * bw * 2 + bw * 0.28;
+      const w = bw * 1.44;
+      const y = chartBottom - h;
+      out += '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="4" fill="#f6b93b" stroke="#e0a020" stroke-width="1.5"/>';
+      out += '<text x="' + (x + w / 2) + '" y="' + (y - 7) + '" text-anchor="middle" font-size="13" font-weight="700" fill="#4a3f66">' + v + '</text>';
+      out += '<text x="' + (x + w / 2) + '" y="' + (chartBottom + 18) + '" text-anchor="middle" font-size="13" font-weight="700" fill="#4a3f66">' + escHtml(name) + '</text>';
+    });
+    return '<svg viewBox="0 0 430 236" style="width:100%;height:auto;display:block">' + out + '</svg>';
+  }
+
+  const RENDERERS = {
+    number_line: numberLineSVG,
+    fraction_model: fractionModelSVG,
+    pictograph: pictographSVG,
+    grid_triangle: gridTriangleSVG,
+    bar_chart: barChartSVG,
+  };
+
+  function renderImage(q){
+    try{
+      if(q.image_type && q.chart_data && RENDERERS[q.image_type]){
+        questionImageEl.innerHTML = RENDERERS[q.image_type](q.chart_data);
+        questionImageEl.classList.remove('hidden');
+      }else{
+        questionImageEl.innerHTML = '';
+        questionImageEl.classList.add('hidden');
+      }
+    }catch(e){
+      console.error('image render error', e);
+      questionImageEl.innerHTML = '';
+      questionImageEl.classList.add('hidden');
+    }
+  }
+
+  /* ======================================================
+     تتبع الجلسات (لمعرفة عدد المستخدمين)
+  ====================================================== */
+  function getDeviceId(){
+    let id = localStorage.getItem('madar_device_id');
+    if(!id){
+      try{
+        id = 'dev-' + (crypto.randomUUID ? crypto.randomUUID() : (Date.now() + '-' + Math.random().toString(16).slice(2)));
+      }catch(e){
+        id = 'dev-' + Date.now() + '-' + Math.random().toString(16).slice(2);
+      }
+      localStorage.setItem('madar_device_id', id);
+    }
+    return id;
+  }
+  function trackSession(){
+    try{
+      client.from('sessions').insert({ device_id: getDeviceId(), user_agent: String(navigator.userAgent).slice(0, 300) }).then(function(){});
+    }catch(e){ /* تسجيل صامت لا يؤثر على اللعبة */ }
+  }
+
+  /* ======================================================
+     جلب الأسئلة
   ====================================================== */
   async function fetchRandomQuestions(){
-    // نجلب كل الأسئلة ثم نخلطها ونأخذ العدد المطلوب.
-    // لجداول كبيرة جداً، يفضّل إنشاء RPC في Supabase لسحب عيّنة عشوائية من السيرفر مباشرة.
-    const { data, error } = await supabaseClient
-      .from(TABLE_NAME)
-      .select('id, question_text, option_a, option_b, option_c, option_d, correct_option, explanation');
-
+    const FIELDS = 'id, question_text, option_a, option_b, option_c, option_d, correct_option, explanation, image_type, chart_data';
+    let data, error;
+    ({ data, error } = await client.from(TABLE_NAME).select(FIELDS).eq('test_name', TEST_NAME));
+    if(error){
+      ({ data, error } = await client.from(TABLE_NAME).select('id, question_text, option_a, option_b, option_c, option_d, correct_option, explanation').eq('test_name', TEST_NAME));
+    }
     if(error) throw error;
-    if(!data || data.length === 0) throw new Error('لا توجد أسئلة في قاعدة البيانات.');
-
+    if(!data || data.length === 0) throw new Error('لا توجد أسئلة لهذا الاختبار في قاعدة البيانات.');
     return shuffle(data).slice(0, QUESTIONS_PER_ROUND);
   }
 
@@ -423,7 +557,6 @@
     homeStatus.classList.remove('error');
     homeStatus.textContent = 'جارِ تحميل الأسئلة...';
     btnStart.disabled = true;
-
     try{
       roundQuestions = await fetchRandomQuestions();
       currentIndex = 0;
@@ -436,7 +569,7 @@
     }catch(err){
       console.error(err);
       homeStatus.classList.add('error');
-      homeStatus.textContent = 'تعذّر تحميل الأسئلة. تأكد من إعداد مفتاح Supabase ثم حاول مجدداً.';
+      homeStatus.textContent = 'تعذّر تحميل الأسئلة. تأكد من تنفيذ كود SQL في Supabase ثم حاول مجدداً.';
     }finally{
       btnStart.disabled = false;
     }
@@ -447,9 +580,6 @@
     homeStatus.textContent = '';
   });
 
-  /* ======================================================
-     شريط النقاط العلوي (تقدم الأسئلة)
-  ====================================================== */
   function buildDots(){
     dotsEl.innerHTML = '';
     roundQuestions.forEach(() => {
@@ -459,7 +589,6 @@
       dotsEl.appendChild(d);
     });
   }
-
   function updateDot(index, state){
     const dot = dotsEl.children[index];
     if(!dot) return;
@@ -475,6 +604,7 @@
     const q = roundQuestions[currentIndex];
     qIndexEl.textContent = currentIndex + 1;
     questionTextEl.textContent = q.question_text;
+    renderImage(q);
     updateDot(currentIndex, 'current');
 
     const opts = [
@@ -483,40 +613,33 @@
       { key: 'C', text: q.option_c },
       { key: 'D', text: q.option_d },
     ];
-
     optionsEl.innerHTML = '';
     opts.forEach(opt => {
       const btn = document.createElement('button');
       btn.className = 'option';
       btn.dataset.key = opt.key;
-      btn.innerHTML = `<span class="letter">${opt.key}</span><span>${opt.text ?? ''}</span>`;
+      btn.innerHTML = '<span class="letter">' + opt.key + '</span><span>' + escHtml(opt.text ?? '') + '</span>';
       btn.addEventListener('click', () => handleAnswer(opt.key));
       optionsEl.appendChild(btn);
     });
-
     startTimer();
   }
 
-  /* ======================================================
-     المؤقت الزمني
-  ====================================================== */
   function startTimer(){
     clearInterval(timerInterval);
     timeLeft = SECONDS_PER_QUESTION;
     timerNum.textContent = timeLeft;
     timerBar.style.strokeDashoffset = 0;
     timerBar.style.stroke = 'var(--gold)';
-
     timerInterval = setInterval(() => {
       timeLeft -= 1;
       timerNum.textContent = Math.max(timeLeft, 0);
       const offset = TIMER_CIRC * (1 - timeLeft / SECONDS_PER_QUESTION);
       timerBar.style.strokeDashoffset = offset;
       if(timeLeft <= 5) timerBar.style.stroke = 'var(--coral)';
-
       if(timeLeft <= 0){
         clearInterval(timerInterval);
-        handleAnswer(null); // انتهى الوقت بدون إجابة
+        handleAnswer(null);
       }
     }, 1000);
   }
@@ -537,13 +660,12 @@
       question: q.question_text,
       chosen: chosenKey,
       correctKey: q.correct_option,
-      correctText: q[`option_${q.correct_option.toLowerCase()}`],
+      correctText: q['option_' + q.correct_option.toLowerCase()],
       explanation: q.explanation,
       isRight,
     });
 
     updateDot(currentIndex, isRight ? 'done' : 'wrong');
-
     [...optionsEl.children].forEach(btn => {
       btn.classList.add('disabled');
       if(btn.dataset.key === q.correct_option) btn.classList.add('correct');
@@ -561,13 +683,12 @@
   }
 
   /* ======================================================
-     شاشة النتيجة النهائية
+     شاشة النتيجة
   ====================================================== */
   function renderResult(){
     showScreen('result');
     const total = roundQuestions.length;
-    scoreValueEl.textContent = `${score}/${total}`;
-
+    scoreValueEl.textContent = score + '/' + total;
     const pct = score / total;
     const offset = SCORE_CIRC * (1 - pct);
     requestAnimationFrame(() => { scoreBar.style.strokeDashoffset = offset; });
@@ -587,20 +708,18 @@
     userAnswers.forEach((a, i) => {
       const item = document.createElement('div');
       item.className = 'review-item';
-      item.innerHTML = `
-        <div class="review-head">
-          <div class="review-badge ${a.isRight ? 'ok' : 'bad'}">${a.isRight ? '✓' : '✕'}</div>
-          <div class="review-q">${i + 1}. ${a.question}</div>
-        </div>
-        <div class="review-answer">الإجابة الصحيحة: <b>${a.correctText}</b></div>
-        ${a.explanation ? `<div class="review-explain">${a.explanation}</div>` : ''}
-      `;
+      item.innerHTML = '<div class="review-head">' +
+        '<div class="review-badge ' + (a.isRight ? 'ok' : 'bad') + '">' + (a.isRight ? '✓' : '✕') + '</div>' +
+        '<div class="review-q">' + (i + 1) + '. ' + escHtml(a.question) + '</div>' +
+        '</div>' +
+        '<div class="review-answer">الإجابة الصحيحة: <b>' + escHtml(a.correctText) + '</b></div>' +
+        (a.explanation ? '<div class="review-explain">' + escHtml(a.explanation) + '</div>' : '');
       reviewListEl.appendChild(item);
     });
   }
 
   /* ======================================================
-     نجوم خلفية بسيطة
+     نجوم الخلفية + تسجيل الجلسة
   ====================================================== */
   (function makeStars(){
     const wrap = document.getElementById('stars');
@@ -612,6 +731,7 @@
       wrap.appendChild(s);
     }
   })();
+  trackSession();
 </script>
 </body>
 </html>
